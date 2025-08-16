@@ -1,0 +1,11 @@
+# Exclude common VCS, CI, and build artifacts from Helm package
+.git/
+.github/
+.DS_Store
+node_modules/
+dist/
+*.tgz
+Dockerfile
+.dockerignore
+README.md
+

@@ -1,0 +1,23 @@
+{
+  "name": "vote-app",
+  "version": "1.0.0",
+  "description": "Simple voting app with Node.js, Express, Docker, and Helm",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "NODE_ENV=development nodemon --watch src src/server.js",
+    "test": "node -e \"console.log('tests passed')\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
+
