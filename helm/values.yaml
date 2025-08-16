@@ -1,13 +1,15 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/your-org/vote-app
+  repository: proxy.replicated.com/proxy/vote/ghcr/grantmiller/vote-app
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "main"
 
 service:
   type: ClusterIP
   port: 80
+  # Set when type is NodePort
+  nodePort: null
 
 resources: {}
 
@@ -27,3 +29,8 @@ ingress:
   host: ""
   annotations: {}
 
+
+# Image pull secrets for private registries, e.g.
+# imagePullSecrets:
+#   - name: my-registry-secret
+imagePullSecrets: []

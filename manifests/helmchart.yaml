@@ -1,0 +1,10 @@
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: vote-app
+spec:
+  chart:
+    name: vote-app
+    chartVersion: 0.1.1
+  releaseName: vote-app
+  values: {}
