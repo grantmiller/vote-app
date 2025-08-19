@@ -15,6 +15,36 @@ const store = {
   ]
 };
 
+async function getReplicatedInfo() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1500);
+  try {
+    const res = await fetch('http://replicated:3000/api/v1/app/info', {
+      signal: controller.signal
+    });
+    if (!res.ok) {
+      return null;
+    }
+    const data = await res.json();
+    return {
+      channelName: data.channelName || data.currentRelease?.channelName || '',
+      versionLabel: data.currentRelease?.versionLabel || ''
+    };
+  } catch (_err) {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+app.get('/api/replicated-info', async (_req, res) => {
+  const info = await getReplicatedInfo();
+  if (!info || (!info.channelName && !info.versionLabel)) {
+    return res.status(204).end();
+  }
+  res.json(info);
+});
+
 app.get('/healthz', (_req, res) => {
   res.status(200).send('ok');
 });
@@ -45,11 +75,17 @@ app.get('/', (_req, res) => {
         .option { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
         button { padding: 0.4rem 0.8rem; }
         .count { font-weight: bold; }
+        .status-badge {
+          position: fixed; bottom: 12px; right: 12px;
+          background: rgba(0,0,0,0.65); color: #fff;
+          font-size: 12px; padding: 6px 8px; border-radius: 6px;
+        }
       </style>
     </head>
     <body>
       <h1>Vote App</h1>
       <div id="options"></div>
+      <div id="status" class="status-badge" style="display:none"></div>
       <script>
         async function load() {
           const res = await fetch('/api/options');
@@ -76,7 +112,27 @@ app.get('/', (_req, res) => {
             root.appendChild(div);
           }
         }
+        async function loadStatus() {
+          try {
+            const r = await fetch('/api/replicated-info');
+            if (!r.ok) return;
+            if (r.status === 204) return;
+            const info = await r.json();
+            if (!info) return;
+            const s = document.getElementById('status');
+            const parts = [];
+            if (info.channelName) parts.push(info.channelName);
+            if (info.versionLabel) parts.push(info.versionLabel);
+            if (parts.length) {
+              s.textContent = parts.join(': ');
+              s.style.display = 'block';
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
         load();
+        loadStatus();
       </script>
     </body>
   </html>`;
