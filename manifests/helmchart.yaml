@@ -8,3 +8,6 @@ spec:
     chartVersion: 0.1.1
   releaseName: vote-app
   values: {}
+  builder:
+    global:
+      replicated: {}
